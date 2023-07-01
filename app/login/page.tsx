@@ -27,12 +27,21 @@ export default function Login() {
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    router.push('/')
-    router.refresh()
+
+    if(email.length > 0) {
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      // write new user to users table
+      const { error } = await supabase
+        .from('users')
+        .insert({ email: email })
+
+      router.push('/')
+      router.refresh()
+    }
   }
 
   return (

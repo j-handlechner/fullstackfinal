@@ -2,6 +2,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import LogoutButton from '../components/LogoutButton'
+import { redirect } from 'next/navigation'
 
 export default async function Index() {
   const supabase = createServerComponentClient({ cookies })
@@ -10,9 +11,13 @@ export default async function Index() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  if(user !== null) {
+    redirect('/dashboard')
+  }
   return (
     <div className="w-full flex flex-col items-center">
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+      <nav className="w-full flex justify-center items-center border-b border-b-foreground/10 h-16">
+        <p className="text-white p-3">fullstack challenge</p>
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm text-foreground">
           <div />
           <div>

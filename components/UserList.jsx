@@ -18,7 +18,9 @@ export default function UserList({groupId}) {
         setUserData(joinedUserData)
       }
 
-      fetch()
+      if(groupId !== undefined) {
+        fetch()
+      }
     }, [groupId])
 
   if (!userData) {

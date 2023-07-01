@@ -18,9 +18,10 @@ export default function Login() {
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
+        emailRedirectTo: `http://127.0.0.1:3000/auth/callback`,
       },
     })
+    router.refresh()
     setView('check-email')
   }
 

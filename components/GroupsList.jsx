@@ -1,10 +1,13 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+"use client"
+
+import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+// import { cookies } from 'next/headers'
 
 export const revalidate = 0
 
 export default async function GroupsList({ userId }) {
-    const supabase = createServerComponentClient({cookies})
+    // const supabase = createServerComponentClient({cookies})
+    const supabase = createClientComponentClient()
     const { data: userGroups } = await supabase.from('userInGroup').select(`
     groupId, 
     groups ( groupname )

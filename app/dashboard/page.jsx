@@ -50,13 +50,9 @@ export default async function Groups() {
 
           <p className="text-white text-4xl pt-2.5">Deine Gruppen</p>
           <p className="text-white text-l pb-2.5">Du bist in diesen Gruppen Mitglied</p>
-          {/* <GroupsList userId={currentUserId} /> */}
-          {/* <CreateGroup /> */}
-
-          <Link
-            href={`/dashboard/groups?id=${9}`}
-            className="text-white"
-          >go to group with id 9</Link>
+          <GroupsList userId={currentUserId} />
+          <CreateGroup />
+          
         </div>
       </div>
   )

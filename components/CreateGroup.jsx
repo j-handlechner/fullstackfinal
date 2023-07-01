@@ -5,7 +5,7 @@ import Dialog from "./Dialog"
 
 export const revalidate = 0
 
-export default async function CreateGroup({ userId }) {
+export default function CreateGroup({ userId }) {
     const supabase = createClientComponentClient()
 
   return (

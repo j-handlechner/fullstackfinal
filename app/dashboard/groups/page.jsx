@@ -1,34 +1,51 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+"use client"
+
+import React, { useState, useEffect } from 'react';
+import { createClientComponentClient, setSession } from '@supabase/auth-helpers-nextjs'
 import LogoutButton from '../../../components/LogoutButton'
-import { redirect } from 'next/navigation'
 import UserList from "../../../components/UserList" 
 import GroupsList from "../../../components/GroupsList" 
 import CreateGroup from "../../../components/CreateGroup"
+import { useSearchParams } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-const currentGroupId = 9
-const currentUserId = 1
+export default function Group() {
+  const supabase = createClientComponentClient()
+  const searchParams = useSearchParams()
 
-export default async function Groups() {
-  const supabase = createServerComponentClient({ cookies })
-  // const supabase = createClientComponentClient()
+  const [fetchedUser, setFetchedUser] = useState(undefined)
+  const [groupId, setGroupId] = useState(undefined)
 
-  // const currentView = useState("default") // can be "default", "inGroup", "addUser", "addExpense"
+  useEffect(() => {
+    setGroupId(searchParams.get('id'))
+  }, [])
 
-  const {
-    data: { session }
-  } = await supabase.auth.getSession()
+  useEffect(() => {
+      if(fetchedUser == undefined) {
+        const fetchSession = async () => {
+    
+          // const {
+          //   data: { session }
+          // } = await supabase.auth.getSession()
+        
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+    
+          setFetchedUser(user)
+        }
+        fetchSession()
+      }
+  }, [])
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    // This route can only be accessed by authenticated users.
-    // Unauthenticated users will be redirected to the `/login` route.
-    redirect('/login')
-  }
+  // useEffect(() => {
+  //   if (!userLoading && userLoading !== undefined && !user) {
+  //     // This route can only be accessed by authenticated users.
+  //     // Unauthenticated users will be redirected to the `/login` route.
+  //     // redirect('/login')
+  //   }
+  // }, [userLoading])
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -38,38 +55,21 @@ export default async function Groups() {
           <div />
           <div>
               <div className="flex items-center gap-4">
-                Hey! You're currently logged in with {user.email}!
+                Hey! You're currently logged in with {fetchedUser?.email}!
                 <LogoutButton />
               </div>
           </div>
         </div>
       </nav>
         <div className="w-full max-w-4xl p-5">
-          <Link
-            href={{
-              pathname: '/dashboard',
-            }}
+        <Link
+            href="/dashboard"
             className="text-white text-xl pt-5"
           >Dashboard</Link>
 
-
-          <p className="text-white text-4xl pt-2.5">Deine Gruppen</p>
-          <p className="text-white text-l pb-2.5">Du bist in diesen Gruppen Mitglied</p>
-          <GroupsList userId={currentUserId} />
-          <CreateGroup />
-
-          <Link
-            href={{
-              pathname: '/dashboard/groups/group',
-              query: {
-                groupid: 9
-              }
-            }}
-            className="text-white"
-          >go to group with id 9</Link>
-
-          <p className="text-white text-4xl pt-5 pb-2.5">Users in group id = 9</p>
-          <UserList groupId={currentGroupId} />
+            <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
+            <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
+            <UserList groupId={groupId} />
         </div>
       </div>
   )

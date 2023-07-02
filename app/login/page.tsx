@@ -22,6 +22,14 @@ export default function Login() {
         emailRedirectTo: `http://127.0.0.1:3000/auth/callback`,
       },
     })
+
+     // write new user to users table
+     if(email.length > 0) {
+      const { error } = await supabase
+      .from('users')
+      .insert({ email: email, username: name })
+     }
+
     router.refresh()
     setView('check-email')
   }
@@ -36,9 +44,9 @@ export default function Login() {
       })
 
       // write new user to users table
-      const { error } = await supabase
-        .from('users')
-        .insert({ email: email })
+      // const { error } = await supabase
+      //   .from('users')
+      //   .insert({ email: email })
 
       router.push('/')
       router.refresh()
@@ -77,6 +85,19 @@ export default function Login() {
           className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
           onSubmit={view === 'sign-in' ? handleSignIn : handleSignUp}
         >
+           {view === "sign-up" && <>
+            <label className="text-md" htmlFor="name">
+              Name
+            </label>
+            <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              name="name"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              placeholder="Name"
+            />
+          </>}
+
           <label className="text-md" htmlFor="email">
             Email
           </label>
@@ -86,7 +107,7 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="you@example.com"
-          />
+          />           
           <label className="text-md" htmlFor="password">
             Password
           </label>

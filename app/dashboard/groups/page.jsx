@@ -15,6 +15,7 @@ export default function Group() {
   const searchParams = useSearchParams()
 
   const [fetchedUser, setFetchedUser] = useState(undefined)
+  const [username, setUsername] = useState(undefined)
   const [groupId, setGroupId] = useState(undefined)
 
   useEffect(() => {
@@ -24,10 +25,6 @@ export default function Group() {
   useEffect(() => {
       if(fetchedUser == undefined) {
         const fetchSession = async () => {
-    
-          // const {
-          //   data: { session }
-          // } = await supabase.auth.getSession()
         
           const {
             data: { user },
@@ -38,6 +35,26 @@ export default function Group() {
         fetchSession()
       }
   }, [])
+
+  useEffect(() => {
+    if(fetchedUser !== undefined) {
+      const fetchName = async () => {
+      
+          const supabase = createClientComponentClient()
+          const { data: found } = await supabase.from('users').select(`
+            username
+      `).eq('email', fetchedUser.email)
+
+      console.log("trying to find user with email: ", fetchedUser.email)
+      console.log("found: ", found)
+      setUsername(found[0]?.username)
+    }
+
+      fetchName()
+      }
+
+    }, [fetchedUser])
+
 
   // useEffect(() => {
   //   if (!userLoading && userLoading !== undefined && !user) {
@@ -55,7 +72,7 @@ export default function Group() {
           <div />
           <div>
               <div className="flex items-center gap-4">
-                Hey! You're currently logged in with {fetchedUser?.email}!
+                Hey {username}!
                 <LogoutButton />
               </div>
           </div>
@@ -70,6 +87,7 @@ export default function Group() {
             <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
             <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
             <UserList groupId={groupId} />
+            <Link href="/dashboard/groups/addUser">Add user</Link>
         </div>
       </div>
   )

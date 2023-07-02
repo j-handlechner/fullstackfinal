@@ -15,7 +15,7 @@ export default function AddUser() {
 
     const username = event.target.username.value;
 
-    const response = await fetch('../api/addUser', {
+    const response = await fetch('/api/addUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

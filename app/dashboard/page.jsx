@@ -25,6 +25,8 @@ export default async function Groups() {
     redirect('/login')
   }
 
+  const { data: users } = await supabase.from('users').select().eq('email', user.email)
+
   return (
     <div className="w-full flex flex-col items-center">
       <nav className="w-full flex justify-center items-center border-b border-b-foreground/10 h-16">
@@ -33,7 +35,7 @@ export default async function Groups() {
           <div />
           <div>
               <div className="flex items-center gap-4">
-                Hey! You're currently logged in with {user.email}!
+                Hey {users[0].username}!
                 <LogoutButton />
               </div>
           </div>

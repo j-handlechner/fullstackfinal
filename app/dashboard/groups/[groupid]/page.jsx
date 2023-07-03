@@ -2,24 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClientComponentClient, setSession } from '@supabase/auth-helpers-nextjs'
-import LogoutButton from '../../../components/LogoutButton'
-import UserList from "../../../components/UserList" 
-import GroupsList from "../../../components/GroupsList" 
-import CreateGroup from "../../../components/CreateGroup"
+import LogoutButton from '../../../../components/LogoutButton'
+import UserList from "../../../../components/UserList" 
+import GroupsList from "../../../../components/GroupsList" 
+import CreateGroup from "../../../../components/CreateGroup"
 import { useSearchParams } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 export default function Group() {
   const supabase = createClientComponentClient()
   const searchParams = useSearchParams()
-
+  const params = useParams()
+  
   const [fetchedUser, setFetchedUser] = useState(undefined)
   const [username, setUsername] = useState(undefined)
   const [groupId, setGroupId] = useState(undefined)
 
   useEffect(() => {
-    setGroupId(searchParams.get('id'))
+    setGroupId(params.groupid)
   }, [])
 
   useEffect(() => {

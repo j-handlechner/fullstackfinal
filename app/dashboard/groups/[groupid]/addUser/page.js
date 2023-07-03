@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 
 export const revalidate = 0;
 
@@ -36,6 +37,7 @@ export default function AddUser() {
     <main>
       <div className="overlay">
         <h2>Add user</h2>
+        {/* <p className="text-white">{router.query.slug}</p> */}
         {error && <p>{error}</p>}
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>

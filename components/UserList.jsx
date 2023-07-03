@@ -28,7 +28,7 @@ export default function UserList({groupId}) {
   }
 
   return (
-    <ul>
+    <ul className="py-5">
         { userData.map((u, idx) => {
             return <li className="text-white" key={idx}>groupidid:{u.groupId} users.name:{u.users.username} users.userId:{u.users.userId}</li>
         })}

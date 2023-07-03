@@ -15,7 +15,7 @@ export default function Group() {
   const supabase = createClientComponentClient()
   const searchParams = useSearchParams()
   const params = useParams()
-  
+
   const [fetchedUser, setFetchedUser] = useState(undefined)
   const [username, setUsername] = useState(undefined)
   const [groupId, setGroupId] = useState(undefined)
@@ -89,7 +89,7 @@ export default function Group() {
             <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
             <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
             <UserList groupId={groupId} />
-            <Link href="/dashboard/groups/addUser">Add user</Link>
+            <Link className="text-xl bg-white" href="/dashboard/groups/addUser">Add user</Link>
         </div>
       </div>
   )

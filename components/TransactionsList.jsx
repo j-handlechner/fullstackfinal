@@ -21,7 +21,6 @@ export default function TransactionsList() {
     }, [])
 
     useEffect(() => {
-       // const supabase = createServerComponentClient({cookies})
        async function fetch() {
             const supabase = createClientComponentClient()
             const { data: transactions } = await supabase.from('transactions').select(`

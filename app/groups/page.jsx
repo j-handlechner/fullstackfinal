@@ -6,9 +6,6 @@ import UserList from "../../components/UserList"
 import GroupsList from "../../components/GroupsList" 
 import Link from 'next/link'
 
-const currentGroupId = 9
-const currentUserId = 1
-
 export default async function Groups() {
   const supabase = createServerComponentClient({ cookies })
 
@@ -55,10 +52,10 @@ export default async function Groups() {
         <div className="w-full max-w-4xl p-5">
           <Link
             href={{
-              pathname: '/dashboard',
+              pathname: '/groups',
             }}
             className="text-white text-xl pt-5"
-          >Dashboard</Link>
+          >Groups</Link>
 
 
           <p className="text-white text-4xl pt-2.5">Deine Gruppen</p>

@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClientComponentClient, setSession } from '@supabase/auth-helpers-nextjs'
-import LogoutButton from '../../../../components/LogoutButton'
-import UserList from "../../../../components/UserList" 
-import GroupsList from "../../../../components/GroupsList" 
-import CreateGroup from "../../../../components/CreateGroup"
+import LogoutButton from '../../../components/LogoutButton'
+import UserList from "../../../components/UserList" 
+import GroupsList from "../../../components/GroupsList" 
+import CreateGroup from "../../../components/CreateGroup"
 import { useSearchParams } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import TransactionsList from "../../../components/TransactionsList"
 
 export default function Group() {
   const supabase = createClientComponentClient()
@@ -82,14 +83,15 @@ export default function Group() {
       </nav>
         <div className="w-full max-w-4xl p-5">
         <Link
-            href="/dashboard"
+            href="/groups"
             className="text-white text-xl pt-5"
-          >Dashboard</Link>
+          >Groups</Link>
 
             <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
             <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
             <UserList groupId={groupId} />
-            <Link className="text-xl bg-white" href="/dashboard/groups/addUser">Add user</Link>
+            <Link className="text-xl bg-white" href={`/dashboard/groups/${groupId}/addUser`}>Add user</Link>
+            <TransactionsList groupId={groupId}/>
         </div>
       </div>
   )

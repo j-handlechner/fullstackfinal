@@ -43,7 +43,7 @@ export default function GroupsList({ userId }) {
         <ul>
             { userGroups.map((ug, idx) => {
                 return <li className="text-white text-3xl" key={idx}>
-                <Link href={`/dashboard/groups/${ug.groupId}`}
+                <Link href={`/groups/${ug.groupId}`}
                     className="text-white">{ug.groups.groupname} -&gt;</Link></li>
             })}
         </ul>

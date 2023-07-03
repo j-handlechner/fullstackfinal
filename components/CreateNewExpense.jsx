@@ -116,7 +116,7 @@ export default function CreateGroup({ updateList }) {
           </form>
         </div> */}
 
-        <Link href={`/groups/${groupId}/newExpense`}>Add new expense</Link>
+        <Link className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" href={`/groups/${groupId}/newExpense`}>Add new expense</Link>
     </>
   )
 }

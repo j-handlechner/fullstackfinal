@@ -12,7 +12,7 @@ export default async function Index() {
   } = await supabase.auth.getUser()
 
   if(user !== null) {
-    redirect('/dashboard')
+    redirect('/groups')
   }
   return (
     <div className="w-full flex flex-col items-center">

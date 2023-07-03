@@ -15,7 +15,7 @@ export default function AddUser() {
 
     const username = event.target.username.value;
 
-    const response = await fetch('../api/addUser', {
+    const response = await fetch('/api/addUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,6 +36,7 @@ export default function AddUser() {
     <main>
       <div className="overlay">
         <h2>Add user</h2>
+        {/* <p className="text-white">{router.query.slug}</p> */}
         {error && <p>{error}</p>}
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>

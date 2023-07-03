@@ -1,0 +1,14 @@
+.dialogwrapper {
+    display: grid;
+    background-color: transparent;
+    pointer-events: none;
+}
+
+.dialogwrapper .dialog {
+    background-color: white;
+    pointer-events: all;
+}
+
+.dialogwrapper.hide {
+    display: none;
+}

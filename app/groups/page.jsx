@@ -4,23 +4,36 @@ import LogoutButton from '../../components/LogoutButton'
 import { redirect } from 'next/navigation'
 import UserList from "../../components/UserList" 
 import GroupsList from "../../components/GroupsList" 
-import CreateGroup from "../../components/CreateGroup"
+import Link from 'next/link'
 
-const currentGroupId = 9
-const currentUserId = 1
-
-export default async function Dashboard() {
+export default async function Groups() {
   const supabase = createServerComponentClient({ cookies })
+
+  const {
+    data: { session }
+  } = await supabase.auth.getSession()
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    // This route can only be accessed by authenticated users.
-    // Unauthenticated users will be redirected to the `/login` route.
     redirect('/login')
   }
+
+    const fetchUserId = async () => {
+    
+        const { data: found } = await supabase.from('users').select(`
+          username, email, userId
+    `).eq('email', user.email)
+
+    return found[0]?.userId
+  }
+
+    const currentUserId = await fetchUserId()
+
+
+  const { data: users } = await supabase.from('users').select().eq('email', user.email)
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -30,21 +43,24 @@ export default async function Dashboard() {
           <div />
           <div>
               <div className="flex items-center gap-4">
-                Hey! You're currently logged in with {user.email}!
+                Hey {users[0].username}!
                 <LogoutButton />
               </div>
           </div>
         </div>
       </nav>
         <div className="w-full max-w-4xl p-5">
-          <p className="text-white text-4xl pt-5 pb-2.5">Dashboard</p>
-          <p className="text-white">You can manage (almost) everything here!</p>
-          <p className="text-white text-4xl pt-5 pb-2.5">Your Groups</p>
-          <GroupsList userId={currentUserId} />
-          <CreateGroup />
+          <Link
+            href={{
+              pathname: '/groups',
+            }}
+            className="text-white text-xl pt-5"
+          >Groups</Link>
 
-          <p className="text-white text-4xl pt-5 pb-2.5">Users in group id = 9</p>
-          <UserList groupId={currentGroupId} />
+
+          <p className="text-white text-4xl pt-2.5">Deine Gruppen</p>
+          <p className="text-white text-l pb-2.5">Du bist in diesen Gruppen Mitglied</p>
+          <GroupsList userId={currentUserId} />
         </div>
       </div>
   )

@@ -1,16 +1,19 @@
 "use client"
 
 import * as React from 'react';
+import "./Dialog.css"
 
 export default function FormDialog({title, msg, onSubmit}) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = ({msg, title, onClick}) => {
     setOpen(true);
+    dialog.current.classList.remove("hide")
   };
 
   const handleClose = () => {
     setOpen(false);
+    dialog.current.classList.add("hide")
   };
 
   const dialogbtn = React.useRef()
@@ -22,13 +25,15 @@ export default function FormDialog({title, msg, onSubmit}) {
         Add new Group
       </button>
 
-        {/* <div ref={dialog} className="bg-white" >
+        <div ref={dialog} className="bg-white dialogwrapper hide" >
+          <div className="dialog">
             <button onClick={handleClose}>close</button>
             <p>Title here</p>
             <p>some text some text some text some text v v some text some text some text</p>
             <button>submit</button>
             <button>cancel</button>
-        </div> */}
+          </div>
+        </div>
     </div>
     )
 }

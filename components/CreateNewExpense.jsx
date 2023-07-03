@@ -1,15 +1,25 @@
+
 "use client"
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 import "./Dialog.css"
-import formik, { useFormik } from "formik"
+import { useParams } from 'next/navigation'
+import { useFormik } from "formik"
+import Link from 'next/link'
 
 export const revalidate = 0
 
 export default function CreateGroup({ updateList }) {
     const supabase = createClientComponentClient()
+
+    const params = useParams()
+
+    const [groupId, setGroupId] = useState(undefined)
+    useEffect(() => {
+      setGroupId(params.groupid)
+    }, [])
 
     const [fetchedUser, setFetchedUser] = useState(undefined)
     const [currentUserId, setCurrentUserId] = useState(undefined)
@@ -91,20 +101,22 @@ export default function CreateGroup({ updateList }) {
 
   return (
     <>
-        <button ref={dialogbtn} className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" onClick={handleClickOpen}>
-          Add new Group
+        {/* <button ref={dialogbtn} className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" onClick={handleClickOpen}>
+          Add new Expense
         </button>
 
         <div ref={dialog} className="bg-white dialogwrapper hide" >
           <form className="dialog" onSubmit={formik.handleSubmit}>
             <button onClick={handleClose}>close</button>
             
-            <p>enter the new group name here:</p>
+            <p>enter the new expense:</p>
             <input value={formik.values.groupname} name="groupname" onChange={formik.handleChange} />
             <button type="submit">submit</button>
             <button>cancel</button>
           </form>
-        </div>
+        </div> */}
+
+        <Link className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" href={`/groups/${groupId}/newExpense`}>Add new expense</Link>
     </>
   )
 }

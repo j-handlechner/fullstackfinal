@@ -24,7 +24,7 @@ export default function Login() {
     })
 
      // write new user to users table
-     if(email.length > 0) {
+     if(email.length > 0 && name.length > 0) {
       const { error } = await supabase
       .from('users')
       .insert({ email: email, username: name })

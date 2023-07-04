@@ -20,6 +20,7 @@ export default function AddUser() {
   const [userLoading, setUserLoading] = useState(undefined)
   const [userId, setUserId] = useState(undefined)
   const [needToRedirect, setNeedToRedirect] = useState(false)
+  const [usernameToAdd, setUsernameToAdd] = useState("")
 
   useEffect(() => {
       setCurrentGroupId(params.groupid)
@@ -141,8 +142,8 @@ export default function AddUser() {
         <form onSubmit={handleSubmit}>
           <label htmlFor="username" className="text-white">Username:</label>
           <div style={{display: "flex", flexDirection: "column", gap: "20px", paddingBottom: "20px"}}>
-            <input type="text" style={{maxWidth: "300px", height: "2rem"}}name="username" id="username" />
-            <input type="hidden" name="groupId" id="groupId" value={currentGroupId}/>
+            <input type="text" style={{maxWidth: "300px", height: "2rem"}} name="username" id="username" value={usernameToAdd} onChange={(event) => setUsernameToAdd(event.target.value)}/>
+            {currentGroupId !== undefined && <input type="hidden" name="groupId" id="groupId" value={currentGroupId} onChange={(event) => {setCurrentGroupId(event.target.value)}}/>}
             <button type="submit" className="py-2 px-4 rounded-md w-3/12 text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">Add</button>
           </div>
         </form>

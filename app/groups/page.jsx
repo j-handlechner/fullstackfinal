@@ -33,7 +33,7 @@ export default async function Groups() {
     const currentUserId = await fetchUserId()
 
     const { data: users } = await supabase.from('users').select().eq("email", user.email)
-    
+
   return (
     <div className="w-full flex flex-col items-center">
     <nav className="w-full flex justify-center items-center border-b border-b-foreground/10 h-16">
@@ -59,7 +59,7 @@ export default async function Groups() {
 
 
           <p className="text-white text-4xl pt-2.5">Deine Gruppen</p>
-          <p className="text-white text-l pb-2.5">Du bist in diesen Gruppen Mitglied</p>
+          <p className="text-white text-l pb-2.5 pt-1">Du bist in diesen Gruppen Mitglied</p>
           <GroupsList userId={currentUserId} />
         </div>
     </div>

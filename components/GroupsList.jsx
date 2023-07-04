@@ -30,21 +30,26 @@ export default function GroupsList({ userId }) {
         }
       }, [userId, updateCounter])
 
+      const updateList = () => {
+        setUpdateCounter((prev) => prev + 1)
+      }
+
   if (!userGroups) {
-    return <p className="text-white">You are not part of any group.</p>
+    return <>
+      <p className="text-white">You are not part of any group.</p>
+      <CreateGroup updateList={updateList}/>
+      </>
+
   }
 
-  const updateList = () => {
-    setUpdateCounter((prev) => prev + 1)
-  }
 
   return (
     <>
-        <ul>
+        <ul className="pb-4">
             { userGroups.map((ug, idx) => {
-                return <li className="text-white text-3xl" key={idx}>
+                return <li className="text-white text-3xl pb-2" key={idx}>
                 <Link href={`/groups/${ug.groupId}`}
-                    className="text-white">{ug.groups.groupname} -&gt;</Link></li>
+                    className="text-white">{ug.groups.groupname} →</Link></li>
             })}
         </ul>
 

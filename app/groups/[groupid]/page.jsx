@@ -21,6 +21,7 @@ export default function Group() {
   const [username, setUsername] = useState(undefined)
   const [groupId, setGroupId] = useState(undefined)
   const [groupname, setGroupname] = useState(undefined)
+  const [userLoading, setUserLoading] = useState(undefined)
 
   useEffect(() => {
     setGroupId(params.groupid)
@@ -29,12 +30,13 @@ export default function Group() {
   useEffect(() => {
       if(fetchedUser == undefined) {
         const fetchSession = async () => {
-        
+          setUserLoading(true)
           const {
             data: { user },
           } = await supabase.auth.getUser()
     
           setFetchedUser(user)
+          setUserLoading(false)
         }
         fetchSession()
       }
@@ -57,7 +59,7 @@ export default function Group() {
     }, [groupId])
 
   useEffect(() => {
-    if(fetchedUser !== undefined) {
+    if(fetchedUser !== undefined && fetchedUser !== null) {
       const fetchName = async () => {
       
           const supabase = createClientComponentClient()
@@ -65,8 +67,6 @@ export default function Group() {
             username
       `).eq('email', fetchedUser.email)
 
-      console.log("trying to find user with email: ", fetchedUser.email)
-      console.log("found: ", found)
       setUsername(found[0]?.username)
     }
 
@@ -76,13 +76,13 @@ export default function Group() {
     }, [fetchedUser])
 
 
-  // useEffect(() => {
-  //   if (!userLoading && userLoading !== undefined && !user) {
-  //     // This route can only be accessed by authenticated users.
-  //     // Unauthenticated users will be redirected to the `/login` route.
-  //     // redirect('/login')
-  //   }
-  // }, [userLoading])
+  useEffect(() => {
+    if (!userLoading && userLoading !== undefined && !fetchedUser) {
+      // This route can only be accessed by authenticated users.
+      // Unauthenticated users will be redirected to the `/login` route.
+      redirect('/login')
+    }
+  }, [userLoading])
 
   return (
     <div className="w-full flex flex-col items-center">

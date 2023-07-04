@@ -5,10 +5,14 @@
 }
 
 .dialogwrapper .dialog {
-    background-color: white;
+    background-color: transparent;
     pointer-events: all;
 }
 
 .dialogwrapper.hide {
+    display: none;
+}
+
+button.hide {
     display: none;
 }

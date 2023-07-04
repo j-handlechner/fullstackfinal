@@ -79,11 +79,14 @@ export default function CreateGroup({ updateList }) {
     const handleClickOpen = ({msg, title, onClick}) => {
       setOpen(true);
       dialog.current.classList.remove("hide")
+      dialogbtn.current.classList.add("hide")
     };
   
     const handleClose = () => {
       setOpen(false);
       dialog.current.classList.add("hide")
+      dialogbtn.current.classList.remove("hide")
+
     };
   
     const dialogbtn = React.useRef()
@@ -92,17 +95,19 @@ export default function CreateGroup({ updateList }) {
   return (
     <>
         <button ref={dialogbtn} className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" onClick={handleClickOpen}>
-          Add new Group
+          Create new group
         </button>
 
-        <div ref={dialog} className="bg-white dialogwrapper hide" >
+        <div ref={dialog} className="dialogwrapper hide" >
           <form className="dialog" onSubmit={formik.handleSubmit}>
-            <button onClick={handleClose}>close</button>
+            <button className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" onClick={handleClose}>close menu</button>
             
-            <p>enter the new group name here:</p>
-            <input value={formik.values.groupname} name="groupname" onChange={formik.handleChange} />
-            <button type="submit">submit</button>
-            <button>cancel</button>
+            <p className="text-white">enter the new group name here:</p>
+            <div style={{display: "flex", flexDirection: "column", gap: "10px", justifyContent: "flex-start", alignItems: "flex-start"}}>
+              <input value={formik.values.groupname} name="groupname" onChange={formik.handleChange} style={{borderRadius: 3 + "px", maxWidth: 300 + "px", height: "2rem"}}/>
+              <button className="py-2 px-4 rounded-md w-3/12 text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">submit</button>
+              <button className="py-2 px-4 rounded-md w-3/12 text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">cancel</button>
+            </div>
           </form>
         </div>
     </>

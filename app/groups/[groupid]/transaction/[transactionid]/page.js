@@ -18,7 +18,12 @@ export default function AddUser() {
     const [userLoading, setUserLoading] = useState(undefined)
     const [needToRedirect, setNeedToRedirect] = useState(false)
   const [userId, setUserId] = useState(undefined)
+  const [groupId, setGroupId] = useState(undefined)
 
+  useEffect(() => {
+    setGroupId(params.groupid)
+  }, [params])
+  
     useEffect(() => {
       console.log("params: ", params)
         setTransactionId(params.transactionid)

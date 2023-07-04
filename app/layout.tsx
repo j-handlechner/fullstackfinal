@@ -14,7 +14,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self' cdn.example.com; connect-src xcwxpqdymboeuchzyzbh.supabase.co localhost:3000;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self' cdn.example.com; connect-src xcwxpqdymboeuchzyzbh.supabase.co localhost:3000 fullstackfinal.vercel.app;" />
   <body>
         <main className="min-h-screen bg-background flex flex-col items-center">
           {children}

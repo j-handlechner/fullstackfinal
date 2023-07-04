@@ -32,23 +32,23 @@ export default async function Groups() {
 
     const currentUserId = await fetchUserId()
 
-
-  const { data: users } = await supabase.from('users').select().eq('email', user.email)
-
+    const { data: users } = await supabase.from('users').select().eq("email", user.email)
+    
   return (
     <div className="w-full flex flex-col items-center">
-      <nav className="w-full flex justify-center items-center border-b border-b-foreground/10 h-16">
-        <p className="text-white p-3">fullstack challenge</p>
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm text-foreground">
-          <div />
-          <div>
-              <div className="flex items-center gap-4">
-                Hey {users[0].username}!
-                <LogoutButton />
-              </div>
-          </div>
+    <nav className="w-full flex justify-center items-center border-b border-b-foreground/10 h-16">
+      <p className="text-white p-3">fullstack challenge</p>
+      <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm text-foreground">
+        <div />
+        <div>
+            <div className="flex items-center gap-4">
+              Hey {users[0].username}!
+              <LogoutButton />
+            </div>
         </div>
-      </nav>
+      </div>
+    </nav>
+    
         <div className="w-full max-w-4xl p-5">
           <Link
             href={{
@@ -62,6 +62,7 @@ export default async function Groups() {
           <p className="text-white text-l pb-2.5">Du bist in diesen Gruppen Mitglied</p>
           <GroupsList userId={currentUserId} />
         </div>
-      </div>
+    </div>
+
   )
 }

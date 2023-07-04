@@ -90,7 +90,7 @@ export default function Group() {
             <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
             <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
             <UserList groupId={groupId} />
-            <Link className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" href={`/dashboard/groups/${groupId}/addUser`}>Add user</Link>
+            <Link className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" href={`/groups/${groupId}/addUser`}>Add user</Link>
             <TransactionsList groupId={groupId}/>
         </div>
       </div>

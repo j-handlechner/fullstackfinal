@@ -5,7 +5,12 @@ import { cookies } from 'next/headers'
 export async function POST(request) {
     const supabase = createServerComponentClient({ cookies })
 
-    const { username } = await request.json();
+    const parsedRequest = await request.json();
+    const { username, groupId } = parsedRequest
+    console.log("GROUP ID: ", groupId)
+    console.log("request", parsedRequest)
+
+    const parsedGroupId = Number(groupId);
 
     if (typeof username !== 'string' || username.length === 0) {
       return NextResponse.json({
@@ -38,13 +43,12 @@ export async function POST(request) {
     }
 
     const userId = user[0].userId;
-    const groupId = 9;
 
     const { data: userAlreadyAdded, alreadyAddedError } = await supabase
       .from('userInGroup')
       .select()
       .eq('userId', userId)
-      .eq('groupId', groupId);
+      .eq('groupId', parsedGroupId);
 
     if (alreadyAddedError) {
       console.error('Error fetching user:', alreadyAddedError);
@@ -66,7 +70,7 @@ export async function POST(request) {
             await supabase
             .from('userInGroup')
             .insert([{ userId: userId, groupId: groupId }]);
-
+            console.log("adding user " + username + "to group with id " + groupId)
             return NextResponse.json({
             message: "User added to group successfully"
             }, {

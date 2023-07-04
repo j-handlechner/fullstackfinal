@@ -1,9 +1,8 @@
 "use client"
 
-import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
 
-// import { cookies } from 'next/headers'
 import {useState, useEffect} from "react"
 export const revalidate = 0
 import { useParams } from 'next/navigation'
@@ -46,18 +45,24 @@ export default function TransactionsList() {
 
   return (
     <>
+            <div style={{display: "flex", gap: "20px", justifyContent: "space-between", alignItems: "end", marginTop: "40px"}}>
+                  <p className="text-white text-2xl pt-5 pb-2.5">Transactions in this group</p>
+              <CreateNewExpense updateList={updateList} />
+            </div>        
+
         <ul>
             { transactions.map((t, idx) => {
-                return <li className="text-white text-l" key={idx}>
-                        
+                return <>
+                    <li className="text-white text-l" key={idx}>
                         <p>payed by {t.users.username}</p>
                         <p>total {t.total}</p>
-                        <Link href={`/groups/${groupId}/transaction/${t.transactionId}`}><p>title {t.title}</p></Link>
+                        <Link href={`/groups/${groupId}/transaction/${t.transactionId}`}><p className="underlined">title {t.title}</p></Link>
                     </li>
+                    <div className="w-32 bg-white" style={{height: 1 + 'px'}}></div>
+                    </>
             })}
         </ul>
 
-        <CreateNewExpense updateList={updateList} />
     </>
   )
 }

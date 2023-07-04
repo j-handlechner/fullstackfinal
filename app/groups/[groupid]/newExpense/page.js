@@ -1,33 +1,189 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
+import { object, string, number } from 'yup';
+import { useRouter, useParams } from 'next/navigation';
+
+const validationSchema = object({
+  title: string().required('Title is required'),
+  payer: string().required('Payer is required'),
+  total: number().required('Total is required'),
+});
 
 export default function NewExpense() {
+  const [error, setError] = useState('');
+  const [users, setFetchedUsers] = useState([])
+  const [isLoading, setIsLoading] = useState(true);
+  const[currentGroupId, setCurrentGroupId] = useState(undefined)
+  const params = useParams()
+
+  useEffect(() => {
+      console.log("params: ", params)
+      setCurrentGroupId(params.groupid)
+  }, [params])
+  
+  const router = useRouter();
+
+  useEffect(() => {
+    if(currentGroupId !== undefined) {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`/api/getUsers/${currentGroupId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (response.ok) {
+            const json = await response.json();
+            setFetchedUsers(json);
+            for (const user of json) {
+              const userId = user.users.userId.toString();
+              formik.setFieldValue(`check_${userId}`, true);
+              formik.setFieldValue(`portion_${userId}`, 0);
+              formik.setFieldValue(`equal_check_${userId}`, false);
+            }
+          } else {
+            throw new Error("Failed to fetch users");
+          }
+        } catch (error) {
+          setError("An error occurred while fetching users.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      fetchUsers();
+    };
+  }, [currentGroupId]);
+
   const initialValues = {
     title: "",
     payer: "",
-    total: "",
-    check_18: true,
-    check_20: true,
-    check_19: true,
-    check_1: true,
-    portion_18: 0,
-    portion_20: 0,
-    portion_19: 0,
-    portion_1: 0,
-    equal_check_18: false,
-    equal_check_20: false,
-    equal_check_19: false,
-    equal_check_1: false,
+    total: 0,
     comment: "",
   };
-
+/*
+  for (const user of users) {
+    const userId = user.users.userId.toString();
+    initialValues[`check_${userId}`] = true;
+    initialValues[`portion_${userId}`] = 0;
+    initialValues[`equal_check_${userId}`] = false;
+  }
+*/
   const formik = useFormik({
     initialValues,
-    onSubmit: (values) => {
-      // Handle form submission
-      console.log(values);
+    validationSchema,
+    onSubmit: async (values) => {
+      // Calculate the sum of checked portions
+      let totalSum = 0;
+      let equalChecks = 0;
+      let equalCheckSum = 0;
+
+      // Iterate over each user
+      for (const user of users) {
+        const userId = user.users.userId.toString();
+        const isChecked = values[`check_${userId}`];
+        const isPortionEqualCheck = values[`equal_check_${userId}`];
+
+        // If the user's checkbox is checked
+        if (isChecked) {
+          // If the user has an equal check, increment the equal check counter
+          if (isPortionEqualCheck) {
+            equalChecks++;
+          } else {
+            // Otherwise, add the portion to the total sum
+            totalSum += parseFloat(values[`portion_${userId}`]) || 0;
+          }
+        }
+      }
+
+      // Calculate the sum for equal checks
+      if (equalChecks > 0) {
+        // Calculate the remaining total value
+        const remainingTotal = parseFloat(values.total) - totalSum;
+
+        // Calculate the equal check sum
+        equalCheckSum = remainingTotal / equalChecks;
+      }
+
+      // Prepare the data to be sent to the API
+      const data = {
+        title: values.title,
+        payer: parseInt(values.payer),
+        total: parseFloat(values.total),
+        expenses: [],
+        comment: values.comment,
+        groupId: currentGroupId,
+        createdAt: new Date().toISOString()
+      };
+
+      // Iterate over each user again to populate the expenses array
+      for (const user of users) {
+        const userId = user.users.userId.toString();
+        const isChecked = values[`check_${userId}`];
+        const isPortionEqualCheck = values[`equal_check_${userId}`];
+        const portion = parseFloat(values[`portion_${userId}`]) || 0;
+
+        if (isChecked) {
+          let expensePortion = 0;
+
+          // If the user has an equal check, assign the equal check sum
+          if (isPortionEqualCheck) {
+            expensePortion = equalCheckSum;
+          } else {
+            expensePortion = portion;
+          }
+
+          // Add the expense to the expenses array
+          data.expenses.push({
+            user: parseInt(userId),
+            portion: expensePortion,
+          });
+        } else {
+          // Set the portion to 0 for unchecked users
+          data.expenses.push({
+            user: parseInt(userId),
+            portion: 0,
+          });
+        }
+      }
+      
+      // Calculate the sum of portions in the expenses array
+      const portionsSum = data.expenses.reduce(
+        (sum, expense) => sum + expense.portion,
+        0
+      );
+
+      // Check if the sum of portions is equal to the total
+      const tolerance = 0.001;
+      if (Math.abs(portionsSum - data.total) > tolerance) {
+        // Display an error and return if not equal
+        //console.log("Sum of portions does not match the total sum");
+        setError("Sum of portions does not match the total sum");
+        return;
+      }
+        
+        // Send the data to the API
+        const response = await fetch("../api/newExpense", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Handle the response
+        if (response.ok) {
+          // Handle successful submission
+          console.log("Expense added successfully!");
+          router.push("/")
+        } else {
+          // Handle error response
+          setError("An error occurred while adding the expense.");
+        }
     },
   });
 
@@ -41,14 +197,26 @@ export default function NewExpense() {
     //toggleField(user);
   };
 
+  if (isLoading || users.length === 0) {
+    return (
+      <main>
+        <div className="overlay">
+          <p className="text-white">Loading...</p>
+        </div>
+      </main>
+    ) // Show a loading indicator while fetching data
+  }
+  else{
+
   return (
     <main>
       <div className="overlay">
-        <h2>New expense</h2>
+        <h2 className="text-white">New expense</h2>
+        {error && <p className="text-white">{error}</p>}
         <form onSubmit={formik.handleSubmit}>
           <ul className="two-row-list flex-list-parent">
             <li>
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title" className="text-white">Title*</label>
               <span className="flex-right">
                 <input
                   type="text"
@@ -60,7 +228,7 @@ export default function NewExpense() {
               </span>
             </li>
             <li>
-              Who paid?
+              <p className="text-white">Who paid?*</p>
               <span className="flex-right">
                 <select
                   name="payer"
@@ -70,15 +238,16 @@ export default function NewExpense() {
                   <option value="" disabled>
                     - Select User -
                   </option>
-                  <option value="18">Kalin</option>
-                  <option value="20">Mary</option>
-                  <option value="19">Tom</option>
-                  <option value="1">Vinz</option>
+                  {users.map((user) => (
+                    <option key={user.users.userId} value={user.users.userId}>
+                      {user.users.username}
+                    </option>
+                  ))}
                 </select>
               </span>
             </li>
             <li>
-              <label htmlFor="total">Total</label>
+              <label htmlFor="total" className="text-white">Total*</label>
               <span className="flex-right">
                 <input
                   type="number"
@@ -91,168 +260,54 @@ export default function NewExpense() {
                 €
               </span>
             </li>
+            {users.map((user) => {
+                        return (
+                          <li key={user.users.userId}>
+                            <span>
+                              <label htmlFor={`check_${user.users.userId}`} className="text-white">
+                                <input
+                                  type="checkbox"
+                                  name={`check_${user.users.userId}`}
+                                  id={`check_${user.users.userId}`}
+                                  checked={formik.values[`check_${user.users.userId}`]}
+                                  onChange={() => toggleUser(user.users.userId)}
+                                />
+                                {user.users.username}:
+                              </label>
+                            </span>
+                            <span></span>
+                            <span>
+                              <input
+                                type="number"
+                                step=".01"
+                                name={`portion_${user.users.userId}`}
+                                id={`portion_${user.users.userId}`}
+                                className="number-field"
+                                onChange={formik.handleChange}
+                                value={formik.values[`portion_${user.users.userId}`]}
+                                disabled={!formik.values[`check_${user.users.userId}`] || formik.values[`equal_check_${user.users.userId}`]}
+                              />
+                              <span className="text-white">€</span>
+                            </span>
+                            <span className="flex-right">
+                              <span className="text-white"> or </span>
+                              <input
+                                type="checkbox"
+                                name={`equal_check_${user.users.userId}`}
+                                id={`equal_check_${user.users.userId}`}
+                                checked={formik.values[`equal_check_${user.users.userId}`]}
+                                onChange={() => toggleField(user.users.userId)}
+                                disabled={!formik.values[`check_${user.users.userId}`]}
+                              />
+                              <label htmlFor={`equal_check_${user.users.userId}`} className="text-white">
+                                split the rest
+                              </label>
+                            </span>
+                          </li>
+                        )
+                    })}
             <li>
-              <span>
-                <label htmlFor="check_18">
-                  <input
-                    type="checkbox"
-                    name="check_18"
-                    id="check_18"
-                    checked={formik.values.check_18}
-                    onChange={() => toggleUser(18)}
-                  />
-                  Kalin:
-                </label>
-              </span>
-              <span></span>
-              <span>
-                <input
-                  type="number"
-                  step=".01"
-                  name="portion_18"
-                  id="portion_18"
-                  className="number-field"
-                  onChange={formik.handleChange}
-                  value={formik.values.portion_18}
-                  disabled={!formik.values.check_18 || formik.values[`equal_check_18`]}
-                />
-                €
-              </span>
-              <span className="flex-right">
-                or
-                <input
-                  type="checkbox"
-                  name="equal_check_18"
-                  id="equal_check_18"
-                  checked={formik.values.equal_check_18}
-                  onChange={() => toggleField(18)}
-                  disabled={!formik.values.check_18}
-                />
-                <label htmlFor="equal_check_18">split the rest</label>
-              </span>
-            </li>
-            <li>
-              <span>
-                <label htmlFor="check_20">
-                  <input
-                    type="checkbox"
-                    name="check_20"
-                    id="check_20"
-                    checked={formik.values.check_20}
-                    onChange={() => toggleUser(20)}
-                  />
-                  Mary:
-                </label>
-              </span>
-              <span></span>
-              <span>
-                <input
-                  type="number"
-                  step=".01"
-                  name="portion_20"
-                  id="portion_20"
-                  className="number-field"
-                  onChange={formik.handleChange}
-                  value={formik.values.portion_20}
-                  disabled={!formik.values.check_20 || formik.values[`equal_check_20`]}
-                />
-                €
-              </span>
-              <span className="flex-right">
-                or
-                <input
-                  type="checkbox"
-                  name="equal_check_20"
-                  id="equal_check_20"
-                  checked={formik.values.equal_check_20}
-                  onChange={() => toggleField(20)}
-                  disabled={!formik.values.check_20}
-                />
-                <label htmlFor="equal_check_20">split the rest</label>
-              </span>
-            </li>
-            <li>
-              <span>
-                <label htmlFor="check_19">
-                  <input
-                    type="checkbox"
-                    name="check_19"
-                    id="check_19"
-                    checked={formik.values.check_19}
-                    onChange={() => toggleUser(19)}
-                  />
-                  Tom:
-                </label>
-              </span>
-              <span></span>
-              <span>
-                <input
-                  type="number"
-                  step=".01"
-                  name="portion_19"
-                  id="portion_19"
-                  className="number-field"
-                  onChange={formik.handleChange}
-                  value={formik.values.portion_19}
-                  disabled={!formik.values.check_19 || formik.values[`equal_check_19`]}
-                />
-                €
-              </span>
-              <span className="flex-right">
-                or
-                <input
-                  type="checkbox"
-                  name="equal_check_19"
-                  id="equal_check_19"
-                  checked={formik.values.equal_check_19}
-                  onChange={() => toggleField(19)}
-                  disabled={!formik.values.check_19}
-                />
-                <label htmlFor="equal_check_19">split the rest</label>
-              </span>
-            </li>
-            <li>
-              <span>
-                <label htmlFor="check_1">
-                  <input
-                    type="checkbox"
-                    name="check_1"
-                    id="check_1"
-                    checked={formik.values.check_1}
-                    onChange={() => toggleUser(1)}
-                  />
-                  Vinz:
-                </label>
-              </span>
-              <span></span>
-              <span>
-                <input
-                  type="number"
-                  step=".01"
-                  name="portion_1"
-                  id="portion_1"
-                  className="number-field"
-                  onChange={formik.handleChange}
-                  value={formik.values.portion_1}
-                  disabled={!formik.values.check_1 || formik.values[`equal_check_1`]}
-                />
-                €
-              </span>
-              <span className="flex-right">
-                or
-                <input
-                  type="checkbox"
-                  name="equal_check_1"
-                  id="equal_check_1"
-                  checked={formik.values.equal_check_1}
-                  onChange={() => toggleField(1)}
-                  disabled={!formik.values.check_1}
-                />
-                <label htmlFor="equal_check_1">split the rest</label>
-              </span>
-            </li>
-            <li>
-              <label htmlFor="comment">Comment</label>
+              <label htmlFor="comment" className="text-white">Comment</label>
               <span className="flex-right">
                 <textarea
                   name="comment"
@@ -263,183 +318,10 @@ export default function NewExpense() {
               </span>
             </li>
           </ul>
-           <p className="center-ui"><input type="submit" value="Add"
-                        name="create" className="button"/></p>
+          <button type="submit" className="button text-white">Add</button>
         </form>
       </div>
     </main>
   );
+  }
 }
-
-
-
-
-
-
-
-
-
-
-/*
-import { useState } from 'react';
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-
-export default function NewExpense ()
-{
-    function toggleField(user) {
-        // Get the checkbox
-        let checkBox = document.getElementById("equal_check_" + user);
-        // Get the output text
-        let textField = document.getElementById("portion_" + user);
-
-        // If the checkbox is checked, display the output text
-        if (checkBox.checked) {
-            textField.setAttribute("disabled", "disabled");
-        } else {
-            textField.removeAttribute("disabled");
-            }
-        }
-
-    function toggleUser(user) {
-        // Get the checkbox
-        let checkBox = document.getElementById("check_" + user);
-
-        // If the checkbox is checked, display the output text
-        if (checkBox.checked) {
-            document.getElementById("equal_check_" + user).removeAttribute("disabled", "disabled");
-            toggleField(user);
-        } else {
-                document.getElementById("equal_check_" + user).setAttribute("disabled", "disabled");
-                document.getElementById("portion_" + user).setAttribute("disabled", "disabled");
-            }
-        }
-    return (
-        <main>
-            <div className="overlay">
-                <h2>New expense</h2>
-                <form action="addExpense.php" method="post">
-                <ul className="two-row-list flex-list-parent">
-                    <li>
-                        <label htmlFor="title">Title </label>
-                        <span className="flex-right">
-                            <input type="text" name="title"
-                                id="title"/>
-                        </span>
-                    </li>
-                    <li> Who paid? <span className="flex-right">
-                            <select name="payer">
-                                <option selected="selected" hidden="">
-                                    - Select User -</option>
-                                <option value="18">Kalin</option>
-                                <option value="20">Mary</option>
-                                <option value="19">Tom</option>
-                                <option value="1">Vinz</option>
-                            </select>
-                        </span>
-                    </li>
-                    <li>
-                        <label htmlFor="total">Total </label>
-                        <span className="flex-right">
-                            <input type="number" step=".01"
-                                name="total" className="number-field"/>€
-                        </span>
-                    </li>
-                    <li>
-                        <span>
-                            <input type="checkbox" name="check_18"
-                                id="check_18" checked="checked"
-                                onClick={() => toggleUser(18)}
-                                />
-                            <label htmlFor="check_18">Kalin: </label>
-                        </span>
-                        <span></span>
-                        <span>
-                            <input type="number" step=".01"
-                                name="portion_18" id="portion_18"
-                                value="0" className="number-field"/>€
-                        </span>
-                        <span className="flex-right"> or <input
-                                type="checkbox" name="equal_check_18"
-                                id="equal_check_18"
-                                onClick={() => toggleField(18)}/>
-                            <label htmlFor="equal_check_18"> split the
-                                rest</label>
-                        </span>
-                    </li>
-                    <li>
-                        <span>
-                            <input type="checkbox" name="check_20"
-                                id="check_20" checked="checked"
-                                onClick={() => toggleUser(20)}/>
-                            <label htmlFor="check_20">Mary: </label>
-                        </span>
-                        <span></span>
-                        <span>
-                            <input type="number" step=".01"
-                                name="portion_20" id="portion_20"
-                                value="0" className="number-field"/>€
-                        </span>
-                        <span className="flex-right"> or <input
-                                type="checkbox" name="equal_check_20"
-                                id="equal_check_20"
-                                onClick={() => toggleField(20)}/>
-                            <label htmlFor="equal_check_20"> split the
-                                rest</label>
-                        </span>
-                    </li>
-                    <li>
-                        <span>
-                            <input type="checkbox" name="check_19"
-                                id="check_19" checked="checked"
-                                onClick={() => toggleUser(19)}/>
-                            <label htmlFor="check_19">Tom: </label>
-                        </span>
-                        <span></span>
-                        <span>
-                            <input type="number" step=".01"
-                                name="portion_19" id="portion_19"
-                                value="0" className="number-field"/>€
-                        </span>
-                        <span className="flex-right"> or <input
-                                type="checkbox" name="equal_check_19"
-                                id="equal_check_19"
-                                onClick={() => toggleField(19)}/>
-                            <label htmlFor="equal_check_19"> split the
-                                rest</label>
-                        </span>
-                    </li>
-                    <li>
-                        <span>
-                            <input type="checkbox" name="check_1"
-                                id="check_1" checked="checked"
-                                onClick={() => toggleUser(1)}/>
-                            <label htmlFor="check_1">Vinz: </label>
-                        </span>
-                        <span></span>
-                        <span>
-                            <input type="number" step=".01"
-                                name="portion_1" id="portion_1"
-                                value="0" className="number-field"/>€
-                        </span>
-                        <span className="flex-right"> or <input
-                                type="checkbox" name="equal_check_1"
-                                id="equal_check_1"
-                                onClick={() => toggleField(1)}/>
-                            <label htmlFor="equal_check_1"> split the
-                                rest</label>
-                        </span>
-                    </li>
-                    <li>
-                        <label htmlFor="comment">Comment: </label>
-                        <textarea name="comment"></textarea>
-                    </li>
-                </ul>
-                <input type="hidden" name="groupId" value="9"/>
-                <p className="center-ui"><input type="submit" value="Add"
-                        name="create" className="button"/></p>
-            </form>
-            </div>
-        </main>
-    )
-}*/

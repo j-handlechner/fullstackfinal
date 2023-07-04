@@ -120,7 +120,7 @@ export default function AddUser() {
         <Link
             href="/groups"
             className="text-white text-xl pt-5"
-          >Back to groups</Link>
+          >← Back to groups</Link>
 
     <main>
       <div className="overlay">

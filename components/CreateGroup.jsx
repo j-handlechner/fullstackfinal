@@ -108,7 +108,6 @@ export default function CreateGroup({ updateList }) {
             <div style={{display: "flex", flexDirection: "column", gap: "10px", justifyContent: "flex-start", alignItems: "flex-start"}}>
               <input value={formik.values.groupname} name="groupname" onChange={formik.handleChange} style={{borderRadius: 3 + "px", maxWidth: 300 + "px", height: "2rem"}}/>
               <button className="py-2 px-4 rounded-md w-3/12 text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">submit</button>
-              <button className="py-2 px-4 rounded-md w-3/12 text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">cancel</button>
             </div>
           </form>
         </div>

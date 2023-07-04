@@ -102,7 +102,7 @@ export default function Group() {
         <Link
             href="/groups"
             className="text-white text-xl pt-5"
-          >Groups</Link>
+          >← Back to groups</Link>
               <p className="text-white text-4xl pt-2.5">{groupname}</p>
 
             <div style={{display: "flex", gap: "20px", justifyContent: "space-between", alignItems: "end", marginTop: "10px"}}>

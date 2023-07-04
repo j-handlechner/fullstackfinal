@@ -268,7 +268,7 @@ export default function NewExpense() {
       <Link
           href="/groups"
           className="text-white text-xl pt-5"
-        >Back to groups</Link>
+        >← Back to groups</Link>
 
     <main>
               <p className="text-white text-4xl pt-2.5" style={{paddingBottom: "20px"}}>New Expense</p>

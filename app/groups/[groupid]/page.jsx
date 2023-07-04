@@ -74,8 +74,6 @@ export default function Group() {
 
     }, [fetchedUser])
 
-
-    // check if the given group id really belongs to the user
   useEffect(() => {
     console.log("now in the thingy")
     async function fetchUsersInGroup() {

@@ -16,6 +16,8 @@ export default function AddUser() {
     const [username, setUsername] = useState(undefined)
     const supabase = createClientComponentClient()
     const [userLoading, setUserLoading] = useState(undefined)
+    const [needToRedirect, setNeedToRedirect] = useState(false)
+  const [userId, setUserId] = useState(undefined)
 
     useEffect(() => {
       console.log("params: ", params)
@@ -73,10 +75,11 @@ export default function AddUser() {
 
           const supabase = createClientComponentClient()
           const { data: found } = await supabase.from('users').select(`
-            username
+            username, userId
       `).eq('email', fetchedUser.email)
 
       setUsername(found[0]?.username)
+      setUserId(found[0]?.userId)
     }
 
       fetchName()
@@ -92,6 +95,31 @@ export default function AddUser() {
         redirect('/login')
       }
     }, [userLoading])
+
+
+  useEffect(() => {
+    console.log("now in the thingy")
+    async function fetchUsersInGroup() {
+      console.log("executing fetchUsersInGroup")
+      if (!userLoading && userLoading !== undefined && fetchedUser !== undefined && groupId !== undefined && userId !== undefined) {
+        console.log("in if")
+        const { data: usersInGroup } = await supabase.from("userInGroup").select("userId").eq("groupId", groupId)
+
+        console.log("searching for the current user in ", usersInGroup)
+        if(!usersInGroup.some(obj => Object.values(obj).includes(userId))) {
+          // redirect("/groups")
+          setNeedToRedirect(true)
+        }
+      } 
+    }
+    fetchUsersInGroup()
+  }, [userLoading, userId, fetchedUser, groupId, params])
+
+  useEffect(() => {
+    if(needToRedirect) {
+      redirect("/login")
+    }
+  }, [needToRedirect])
 
     if (isLoading || transactionDetails.length === 0) {
     return (

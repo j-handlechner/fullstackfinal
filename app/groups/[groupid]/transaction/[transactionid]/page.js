@@ -9,34 +9,40 @@ export default function AddUser() {
     const [transactionDetails, setTransactionDetails] = useState()
     const params = useParams()
     const[transactionId, setTransactionId] = useState(undefined)
-    useEffect(() => {
-        setTransactionId(params.transactionId)
-    })
 
     useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const response = await fetch(`/api/getTransactionDetails/${transactionId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+      console.log("params: ", params)
+        setTransactionId(params.transactionid)
+    }, [params])
 
-        if (response.ok) {
-          const json = await response.json();
-          setTransactionDetails(json)
-        } else {
-          throw new Error("Failed to fetch transaction details");
-        }
-      } catch (error) {
-        setError("An error occurred while fetching transaction details.");
-      } finally {
-        setIsLoading(false);
+    useEffect(() => {
+      console.log("doing fetchuseffect")
+      if(transactionId !== undefined) {
+        const fetchDetails = async () => {
+          try {
+            const response = await fetch(`/api/getTransactionDetails/${transactionId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+    
+            if (response.ok) {
+              const json = await response.json();
+              setTransactionDetails(json)
+              console.log("transactiondetails: ", transactionDetails)
+            } else {
+              throw new Error("Failed to fetch transaction details");
+            }
+          } catch (error) {
+            // setError("An error occurred while fetching transaction details.");
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        fetchDetails();
       }
-    };
-    fetchDetails();
-  }, []);
+  }, [transactionId]);
 
     if (isLoading || transactionDetails.length === 0) {
     return (

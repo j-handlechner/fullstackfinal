@@ -22,7 +22,7 @@ export default function NewExpense() {
       console.log("params: ", params)
       setCurrentGroupId(params.groupid)
   }, [params])
-  
+
   const router = useRouter();
 
   useEffect(() => {
@@ -167,7 +167,7 @@ export default function NewExpense() {
       }
         
         // Send the data to the API
-        const response = await fetch("../api/newExpense", {
+        const response = await fetch("/api/newExpense", {
           method: "POST",
           body: JSON.stringify(data),
           headers: {

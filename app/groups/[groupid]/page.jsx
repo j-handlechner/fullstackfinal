@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LogoutButton from '../../../components/LogoutButton'
 import UserList from "../../../components/UserList" 
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import TransactionsList from "../../../components/TransactionsList"
+import { redirect } from 'next/navigation'
 
 export default function Group() {
   const supabase = createClientComponentClient()
@@ -18,6 +18,8 @@ export default function Group() {
   const [groupId, setGroupId] = useState(undefined)
   const [groupname, setGroupname] = useState(undefined)
   const [userLoading, setUserLoading] = useState(undefined)
+  const [userId, setUserId] = useState(undefined)
+  const [needToRedirect, setNeedToRedirect] = useState(false)
 
   useEffect(() => {
     setGroupId(params.groupid)
@@ -60,10 +62,11 @@ export default function Group() {
       
           const supabase = createClientComponentClient()
           const { data: found } = await supabase.from('users').select(`
-            username
+            username, userId
       `).eq('email', fetchedUser.email)
 
       setUsername(found[0]?.username)
+      setUserId(found[0]?.userId)
     }
 
       fetchName()
@@ -72,10 +75,33 @@ export default function Group() {
     }, [fetchedUser])
 
 
+    // check if the given group id really belongs to the user
+  useEffect(() => {
+    console.log("now in the thingy")
+    async function fetchUsersInGroup() {
+      console.log("executing fetchUsersInGroup")
+      if (!userLoading && userLoading !== undefined && fetchedUser !== undefined && groupId !== undefined && userId !== undefined) {
+        console.log("in if")
+        const { data: usersInGroup } = await supabase.from("userInGroup").select("userId").eq("groupId", groupId)
+
+        console.log("searching for the current user in ", usersInGroup)
+        if(!usersInGroup.some(obj => Object.values(obj).includes(userId))) {
+          // redirect("/groups")
+          setNeedToRedirect(true)
+        }
+      } 
+    }
+    fetchUsersInGroup()
+  }, [userLoading, userId, fetchedUser, groupId, params])
+
+  useEffect(() => {
+    if(needToRedirect) {
+      redirect("/login")
+    }
+  }, [needToRedirect])
+
   useEffect(() => {
     if (!userLoading && userLoading !== undefined && !fetchedUser) {
-      // This route can only be accessed by authenticated users.
-      // Unauthenticated users will be redirected to the `/login` route.
       redirect('/login')
     }
   }, [userLoading])

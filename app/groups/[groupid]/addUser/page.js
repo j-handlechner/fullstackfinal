@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LogoutButton from "../../../../components/LogoutButton"
+import { redirect } from 'next/navigation'
 
 export const revalidate = 0;
 

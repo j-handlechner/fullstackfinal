@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import LogoutButton from "../../../../../components/LogoutButton"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { redirect } from 'next/navigation'
 
 export default function AddUser() {
     const [isLoading, setIsLoading] = useState(true);

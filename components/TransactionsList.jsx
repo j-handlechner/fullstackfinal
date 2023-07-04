@@ -52,14 +52,14 @@ export default function TransactionsList() {
 
         <ul>
             { transactions.map((t, idx) => {
-                return <>
-                    <li className="text-white text-l" key={idx}>
+                return <div key={t.transactionId}>
+                    <li className="text-white text-l" >
                         <Link href={`/groups/${groupId}/transaction/${t.transactionId}`}><p className="text-xl" style={{textDecoration: "underline"}}>{t.title} →</p></Link>
                         <p>payed by: {t.users.username}</p>
                         <p>total: {t.total}</p>
                     </li>
                     <div className="w-32 bg-white" style={{height: 1 + 'px', margin: "20px 0px"}}></div>
-                    </>
+                    </div>
             })}
         </ul>
 

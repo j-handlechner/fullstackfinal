@@ -7,6 +7,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LogoutButton from "../../../../components/LogoutButton"
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 const validationSchema = object({
   title: string().required('Title is required'),

@@ -20,10 +20,11 @@ export default function Group() {
   const [fetchedUser, setFetchedUser] = useState(undefined)
   const [username, setUsername] = useState(undefined)
   const [groupId, setGroupId] = useState(undefined)
+  const [groupname, setGroupname] = useState(undefined)
 
   useEffect(() => {
     setGroupId(params.groupid)
-  }, [])
+  }, [params])
 
   useEffect(() => {
       if(fetchedUser == undefined) {
@@ -38,6 +39,22 @@ export default function Group() {
         fetchSession()
       }
   }, [])
+
+  useEffect(() => {
+    if(groupId !== undefined) {
+      const fetchName = async () => {
+          const supabase = createClientComponentClient()
+          const { data: found } = await supabase.from('groups').select(`
+            groupname
+      `).eq('groupId', groupId)
+
+      setGroupname(found[0]?.groupname)
+    }
+
+      fetchName()
+      }
+
+    }, [groupId])
 
   useEffect(() => {
     if(fetchedUser !== undefined) {
@@ -87,8 +104,8 @@ export default function Group() {
             className="text-white text-xl pt-5"
           >Groups</Link>
 
-            <p className="text-white text-4xl pt-2.5">Gruppe XY id: {groupId}</p>
-            <p className="text-white text-4xl pt-5 pb-2.5">Users in this group</p>
+            <p className="text-white text-4xl pt-2.5">{groupname}</p>
+            <p className="text-white text-2xl pt-5 pb-2.5">Users in this group</p>
             <UserList groupId={groupId} />
             <Link className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500" href={`/groups/${groupId}/addUser`}>Add user</Link>
             <TransactionsList groupId={groupId}/>

@@ -24,7 +24,7 @@ export default function TransactionsList() {
        async function fetch() {
             const supabase = createClientComponentClient()
             const { data: transactions } = await supabase.from('transactions').select(`
-            title, payedBy, total,
+            transactionId, title, payedBy, total,
             users ( username )
         `).eq('groupId', groupId)
             setTransactions(transactions)
@@ -48,10 +48,11 @@ export default function TransactionsList() {
     <>
         <ul>
             { transactions.map((t, idx) => {
-                return <li className="text-white text-3xl" key={idx}>
+                return <li className="text-white text-l" key={idx}>
+                        
                         <p>payed by {t.users.username}</p>
                         <p>total {t.total}</p>
-                        <p>title {t.title}</p>
+                        <Link href={`/groups/${groupId}/transaction/${t.transactionId}`}><p>title {t.title}</p></Link>
                     </li>
             })}
         </ul>

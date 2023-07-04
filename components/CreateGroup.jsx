@@ -67,6 +67,8 @@ export default function CreateGroup({ updateList }) {
           const {errors} = await supabase.from("userInGroup").insert({userId: currentUserId, groupId: insertedGroupsData[0].groupId})
 
           updateList()
+
+          handleClose()
         }
         else {
           // groupname can't be empty

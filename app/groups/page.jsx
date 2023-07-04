@@ -41,7 +41,7 @@ export default async function Groups() {
         <div />
         <div>
             <div className="flex items-center gap-4">
-              Hey {users[0].username}!
+              Hey {users[0]?.username}!
               <LogoutButton />
             </div>
         </div>

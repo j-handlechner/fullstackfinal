@@ -271,12 +271,13 @@ export default function NewExpense() {
         >Back to groups</Link>
 
     <main>
+              <p className="text-white text-4xl pt-2.5" style={{paddingBottom: "20px"}}>New Expense</p>
+
       <div className="overlay">
-        <h2 className="text-white">New expense</h2>
         {error && <p className="text-white">{error}</p>}
         <form onSubmit={formik.handleSubmit}>
           <ul className="two-row-list flex-list-parent">
-            <li>
+            <li style={{paddingBottom: "20px"}}>
               <label htmlFor="title" className="text-white">Title*</label>
               <span className="flex-right">
                 <input
@@ -288,7 +289,7 @@ export default function NewExpense() {
                 />
               </span>
             </li>
-            <li>
+            <li style={{paddingBottom: "20px"}}>
               <p className="text-white">Who paid?*</p>
               <span className="flex-right">
                 <select
@@ -307,7 +308,7 @@ export default function NewExpense() {
                 </select>
               </span>
             </li>
-            <li>
+            <li style={{paddingBottom: "20px"}}>
               <label htmlFor="total" className="text-white">Total*</label>
               <span className="flex-right">
                 <input
@@ -323,7 +324,7 @@ export default function NewExpense() {
             </li>
             {users.map((user) => {
                         return (
-                          <li key={user.users.userId}>
+                          <li key={user.users.userId} style={{paddingBottom: "20px"}}>
                             <span>
                               <label htmlFor={`check_${user.users.userId}`} className="text-white">
                                 <input
@@ -367,7 +368,7 @@ export default function NewExpense() {
                           </li>
                         )
                     })}
-            <li>
+            <li style={{paddingBottom: "20px"}}>
               <label htmlFor="comment" className="text-white">Comment</label>
               <span className="flex-right">
                 <textarea
@@ -379,7 +380,7 @@ export default function NewExpense() {
               </span>
             </li>
           </ul>
-          <button type="submit" className="button text-white">Add</button>
+          <button type="submit" className="py-2 px-4 rounded-md w-3/12 self-center text-m bg-white text-black text-center no-underline bg-btn-background hover:bg-gray-500">Add</button>
         </form>
       </div>
     </main>

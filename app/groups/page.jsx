@@ -2,7 +2,6 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import LogoutButton from '../../components/LogoutButton'
 import { redirect } from 'next/navigation'
-import UserList from "../../components/UserList" 
 import GroupsList from "../../components/GroupsList" 
 import Link from 'next/link'
 

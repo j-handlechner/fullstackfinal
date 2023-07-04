@@ -65,14 +65,7 @@ export default function NewExpense() {
     total: 0,
     comment: "",
   };
-/*
-  for (const user of users) {
-    const userId = user.users.userId.toString();
-    initialValues[`check_${userId}`] = true;
-    initialValues[`portion_${userId}`] = 0;
-    initialValues[`equal_check_${userId}`] = false;
-  }
-*/
+
   const formik = useFormik({
     initialValues,
     validationSchema,
